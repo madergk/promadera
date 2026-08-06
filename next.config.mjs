@@ -1,11 +1,11 @@
+import { withPayload } from '@payloadcms/next/withPayload'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
+    // El typecheck real corre aparte con `npm run typecheck`.
     ignoreBuildErrors: true,
-  },
-  images: {
-    unoptimized: true,
   },
 }
 
-export default nextConfig
+export default withPayload(nextConfig, { devBundleServerPackages: false })
