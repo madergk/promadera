@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Toaster } from '@/components/ui/sonner'
 import { TAGLINE } from '@/lib/brand'
+import { isIndexable } from '@/lib/site'
 import './globals.css'
 
 const manrope = Manrope({
@@ -34,6 +35,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
   },
+  // Mientras el sitio está en migración no se indexa (ver lib/site.ts).
+  ...(isIndexable ? {} : { robots: { index: false, follow: false } }),
 }
 
 export const viewport = {
