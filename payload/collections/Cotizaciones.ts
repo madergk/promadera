@@ -40,7 +40,7 @@ export const Cotizaciones: CollectionConfig = {
   admin: {
     useAsTitle: 'id',
     group: 'Comercial',
-    defaultColumns: ['empresa', 'solicitante', 'status', 'createdAt'],
+    defaultColumns: ['empresa', 'solicitante', 'tipoConsulta', 'status', 'createdAt'],
   },
   access: {
     read: readCotizaciones,
@@ -52,9 +52,42 @@ export const Cotizaciones: CollectionConfig = {
     },
     delete: isAdmin,
   },
+  hooks: {
+    beforeChange: [
+      // El solicitante siempre es quien crea la cotización; nunca se toma del body
+      // (evita crear solicitudes a nombre de otro usuario).
+      ({ req, operation, data }) => {
+        if (operation === 'create' && req.user && req.user.role !== 'admin') {
+          return { ...data, solicitante: req.user.id }
+        }
+        return data
+      },
+    ],
+  },
   fields: [
     { name: 'empresa', type: 'relationship', relationTo: 'empresas', required: true },
     { name: 'solicitante', type: 'relationship', relationTo: 'users', required: true },
+    {
+      name: 'tipoConsulta',
+      type: 'select',
+      required: true,
+      defaultValue: 'proyecto',
+      options: [
+        { label: 'Producto del catálogo', value: 'producto' },
+        { label: 'Servicio', value: 'servicio' },
+        { label: 'Proyecto a medida', value: 'proyecto' },
+      ],
+    },
+    { name: 'referencia', type: 'text', maxLength: 200 },
+    { name: 'descripcion', type: 'textarea', required: true, maxLength: 2000 },
+    { name: 'cantidad', type: 'text', maxLength: 120 },
+    { name: 'plazo', type: 'text', maxLength: 120 },
+    { name: 'ubicacion', type: 'text', maxLength: 160 },
+    { name: 'presupuesto', type: 'text', maxLength: 120 },
+    { name: 'solicitanteNombre', type: 'text', required: true, maxLength: 120 },
+    { name: 'solicitanteEmail', type: 'email', required: true },
+    { name: 'solicitanteTelefono', type: 'text', maxLength: 60 },
+    { name: 'solicitanteEmpresa', type: 'text', maxLength: 160 },
     {
       name: 'status',
       type: 'select',
@@ -68,8 +101,6 @@ export const Cotizaciones: CollectionConfig = {
         { label: 'Cerrada', value: 'cerrada' },
       ],
     },
-    { name: 'mensaje', type: 'textarea' },
-    { name: 'presupuesto', type: 'number' },
     { name: 'respuesta', type: 'textarea' },
   ],
 }

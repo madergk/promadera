@@ -257,7 +257,15 @@ export interface Proyecto {
   id: number;
   titulo: string;
   slug: string;
-  categoria?: string | null;
+  resumen?: string | null;
+  descripcion?: string | null;
+  categoria?: ('Vivienda' | 'Comercial' | 'Institucional' | 'Industrial' | 'Turismo') | null;
+  ubicacion?: string | null;
+  anio?: number | null;
+  arquitecto?: string | null;
+  constructora?: string | null;
+  sistemaConstructivo?: string | null;
+  impactoCarbono?: string | null;
   materiales?:
     | {
         material: string;
@@ -265,6 +273,7 @@ export interface Proyecto {
       }[]
     | null;
   empresas?: (number | Empresa)[] | null;
+  portada?: (number | null) | Media;
   galeria?: (number | Media)[] | null;
   publicado?: boolean | null;
   updatedAt: string;
@@ -352,9 +361,18 @@ export interface Cotizacione {
   id: number;
   empresa: number | Empresa;
   solicitante: number | User;
+  tipoConsulta: 'producto' | 'servicio' | 'proyecto';
+  referencia?: string | null;
+  descripcion: string;
+  cantidad?: string | null;
+  plazo?: string | null;
+  ubicacion?: string | null;
+  presupuesto?: string | null;
+  solicitanteNombre: string;
+  solicitanteEmail: string;
+  solicitanteTelefono?: string | null;
+  solicitanteEmpresa?: string | null;
   status: 'pendiente' | 'respondida' | 'aceptada' | 'rechazada' | 'cerrada';
-  mensaje?: string | null;
-  presupuesto?: number | null;
   respuesta?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -663,7 +681,15 @@ export interface EmpresasSelect<T extends boolean = true> {
 export interface ProyectosSelect<T extends boolean = true> {
   titulo?: T;
   slug?: T;
+  resumen?: T;
+  descripcion?: T;
   categoria?: T;
+  ubicacion?: T;
+  anio?: T;
+  arquitecto?: T;
+  constructora?: T;
+  sistemaConstructivo?: T;
+  impactoCarbono?: T;
   materiales?:
     | T
     | {
@@ -671,6 +697,7 @@ export interface ProyectosSelect<T extends boolean = true> {
         id?: T;
       };
   empresas?: T;
+  portada?: T;
   galeria?: T;
   publicado?: T;
   updatedAt?: T;
@@ -739,9 +766,18 @@ export interface AgendaEventosSelect<T extends boolean = true> {
 export interface CotizacionesSelect<T extends boolean = true> {
   empresa?: T;
   solicitante?: T;
-  status?: T;
-  mensaje?: T;
+  tipoConsulta?: T;
+  referencia?: T;
+  descripcion?: T;
+  cantidad?: T;
+  plazo?: T;
+  ubicacion?: T;
   presupuesto?: T;
+  solicitanteNombre?: T;
+  solicitanteEmail?: T;
+  solicitanteTelefono?: T;
+  solicitanteEmpresa?: T;
+  status?: T;
   respuesta?: T;
   updatedAt?: T;
   createdAt?: T;
