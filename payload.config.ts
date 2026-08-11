@@ -58,6 +58,12 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+    // Nunca hacer push automático de schema, ni siquiera en dev: cualquier
+    // proceso local con NODE_ENV !== 'production' conectado por error a Neon
+    // (ver historial de incidentes con DATABASE_URL apuntando a producción)
+    // reescribiría el schema en vivo. El schema se gestiona solo por
+    // migraciones versionadas en migrations/, aplicadas a mano en local.
+    push: false,
   }),
   plugins: [
     // En Vercel el filesystem es efímero y de solo lectura: los uploads van a Blob.
