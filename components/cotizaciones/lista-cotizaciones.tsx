@@ -7,6 +7,7 @@ import { CalendarClock, ChevronDown, FileText, Mail, MapPin, Star } from 'lucide
 
 import { Button } from '@/components/ui/button'
 import { EstadoBadge, estadoMeta } from '@/components/cotizaciones/estado-badge'
+import { HiloCotizacion } from '@/components/cotizaciones/hilo-cotizacion'
 import { cn } from '@/lib/utils'
 import type { EstadoCotizacion } from '@/payload/collections/Cotizaciones'
 import { cancelarCotizacion, confirmarAvance, marcarPreferida } from '@/app/(app)/mis-cotizaciones/actions'
@@ -176,6 +177,13 @@ export function ListaCotizaciones({ items }: { items: CotizacionItem[] }) {
                     Confirmaste avanzar con esta propuesta el {fecha(c.avanceConfirmadoAt)}.
                   </p>
                 )}
+
+                <HiloCotizacion
+                  cotizacionId={c.id}
+                  perspectiva="solicitante"
+                  otraParteNombre={c.empresa?.nombre}
+                  revalidatePathTo="/mis-cotizaciones"
+                />
 
                 <div className="flex flex-wrap gap-3">
                   {c.estado === 'respondida' && (

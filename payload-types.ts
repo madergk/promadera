@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    documentos: Documento;
     empresas: Empresa;
     proyectos: Proyecto;
     noticias: Noticia;
@@ -88,6 +89,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    documentos: DocumentosSelect<false> | DocumentosSelect<true>;
     empresas: EmpresasSelect<false> | EmpresasSelect<true>;
     proyectos: ProyectosSelect<false> | ProyectosSelect<true>;
     noticias: NoticiasSelect<false> | NoticiasSelect<true>;
@@ -203,6 +205,27 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documentos".
+ */
+export interface Documento {
+  id: number;
+  nombre: string;
+  empresa?: (number | null) | Empresa;
+  subidoPor?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "empresas".
  */
 export interface Empresa {
@@ -212,7 +235,7 @@ export interface Empresa {
   sector?: string | null;
   descripcion?: string | null;
   ubicacion?: string | null;
-  tipoProveedor?: ('fabricante' | 'distribuidor' | 'constructora' | 'servicios') | null;
+  tipoProveedor?: ('empresa' | 'productor' | 'industrial' | 'profesional') | null;
   servicios?:
     | {
         servicio: string;
@@ -239,21 +262,17 @@ export interface Empresa {
   sitioWeb?: string | null;
   anioFundacion?: number | null;
   empleados?: string | null;
-  estado: 'borrador' | 'en_revision' | 'publicado' | 'rechazado';
+  estado: 'borrador' | 'en_revision' | 'publicado' | 'archivado';
   publicada?: boolean | null;
   user?: (number | null) | User;
   contacto?: string | null;
   telefono?: string | null;
   whatsapp?: string | null;
-  documentos?:
-    | {
-        nombre?: string | null;
-        archivo?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
+  documentos?: (number | Documento)[] | null;
   consentimientos?: {
     terminosAceptados?: boolean | null;
+    comunicacionesAceptadas?: boolean | null;
+    version?: string | null;
     fechaConsentimiento?: string | null;
   };
   updatedAt: string;
@@ -386,10 +405,10 @@ export interface Cotizacione {
   respuesta?: string | null;
   respondidaAt?: string | null;
   presupuestoMonto?: number | null;
-  presupuestoMoneda?: ('ARS' | 'USD') | null;
+  presupuestoMoneda?: ('ARS' | 'USD' | 'EUR') | null;
   presupuestoValidezDias?: number | null;
   presupuestoPlazo?: string | null;
-  presupuestoArchivo?: (number | null) | Media;
+  presupuestoArchivo?: (number | null) | Documento;
   preferidaAt?: string | null;
   avanceConfirmadoAt?: string | null;
   updatedAt: string;
@@ -403,7 +422,10 @@ export interface CotizacionUpdate {
   id: number;
   cotizacion: number | Cotizacione;
   autor: number | User;
-  mensaje: string;
+  accion: 'mensaje' | 'estado' | 'presupuesto_borrador' | 'presupuesto_enviado';
+  mensaje?: string | null;
+  estadoAnterior?: ('enviada' | 'en_revision' | 'respondida' | 'cerrada' | 'cancelada') | null;
+  estadoNuevo?: ('enviada' | 'en_revision' | 'respondida' | 'cerrada' | 'cancelada') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -504,6 +526,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'documentos';
+        value: number | Documento;
       } | null)
     | ({
         relationTo: 'empresas';
@@ -645,6 +671,26 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documentos_select".
+ */
+export interface DocumentosSelect<T extends boolean = true> {
+  nombre?: T;
+  empresa?: T;
+  subidoPor?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "empresas_select".
  */
 export interface EmpresasSelect<T extends boolean = true> {
@@ -686,17 +732,13 @@ export interface EmpresasSelect<T extends boolean = true> {
   contacto?: T;
   telefono?: T;
   whatsapp?: T;
-  documentos?:
-    | T
-    | {
-        nombre?: T;
-        archivo?: T;
-        id?: T;
-      };
+  documentos?: T;
   consentimientos?:
     | T
     | {
         terminosAceptados?: T;
+        comunicacionesAceptadas?: T;
+        version?: T;
         fechaConsentimiento?: T;
       };
   updatedAt?: T;
@@ -825,7 +867,10 @@ export interface CotizacionesSelect<T extends boolean = true> {
 export interface CotizacionUpdatesSelect<T extends boolean = true> {
   cotizacion?: T;
   autor?: T;
+  accion?: T;
   mensaje?: T;
+  estadoAnterior?: T;
+  estadoNuevo?: T;
   updatedAt?: T;
   createdAt?: T;
 }

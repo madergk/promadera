@@ -132,11 +132,13 @@ export const Cotizaciones: CollectionConfig = {
       options: [
         { label: 'ARS', value: 'ARS' },
         { label: 'USD', value: 'USD' },
+        { label: 'EUR', value: 'EUR' },
       ],
     },
     { name: 'presupuestoValidezDias', type: 'number' },
     { name: 'presupuestoPlazo', type: 'text', maxLength: 120 },
-    { name: 'presupuestoArchivo', type: 'upload', relationTo: 'media' },
+    // Documentos (privado), no Media: lo ve solo el solicitante de esta cotización.
+    { name: 'presupuestoArchivo', type: 'relationship', relationTo: 'documentos' },
     // Marcas del solicitante sobre la propuesta recibida.
     { name: 'preferidaAt', type: 'date' },
     { name: 'avanceConfirmadoAt', type: 'date' },

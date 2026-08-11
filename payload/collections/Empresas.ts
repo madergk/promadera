@@ -34,10 +34,10 @@ export const Empresas: CollectionConfig = {
       name: 'tipoProveedor',
       type: 'select',
       options: [
-        { label: 'Fabricante', value: 'fabricante' },
-        { label: 'Distribuidor', value: 'distribuidor' },
-        { label: 'Constructora', value: 'constructora' },
-        { label: 'Servicios', value: 'servicios' },
+        { label: 'Empresa / Comercializadora', value: 'empresa' },
+        { label: 'Productor forestal', value: 'productor' },
+        { label: 'Industrial / Aserradero', value: 'industrial' },
+        { label: 'Profesional independiente', value: 'profesional' },
       ],
     },
     {
@@ -76,7 +76,7 @@ export const Empresas: CollectionConfig = {
         { label: 'Borrador', value: 'borrador' },
         { label: 'En revisión', value: 'en_revision' },
         { label: 'Publicado', value: 'publicado' },
-        { label: 'Rechazado', value: 'rechazado' },
+        { label: 'Archivado', value: 'archivado' },
       ],
     },
     { name: 'publicada', type: 'checkbox', defaultValue: false },
@@ -90,14 +90,14 @@ export const Empresas: CollectionConfig = {
     { name: 'contacto', type: 'text', access: { read: ownerOrAdminFieldLevel } },
     { name: 'telefono', type: 'text', access: { read: ownerOrAdminFieldLevel } },
     { name: 'whatsapp', type: 'text', access: { read: ownerOrAdminFieldLevel } },
+    // Documentación institucional: colección separada (ver Documentos.ts), nunca
+    // el store público de Media — ningún campo acá expone la URL del archivo.
     {
       name: 'documentos',
-      type: 'array',
+      type: 'relationship',
+      relationTo: 'documentos',
+      hasMany: true,
       access: { read: ownerOrAdminFieldLevel },
-      fields: [
-        { name: 'nombre', type: 'text' },
-        { name: 'archivo', type: 'upload', relationTo: 'media' },
-      ],
     },
     {
       name: 'consentimientos',
@@ -105,6 +105,8 @@ export const Empresas: CollectionConfig = {
       access: { read: ownerOrAdminFieldLevel },
       fields: [
         { name: 'terminosAceptados', type: 'checkbox', defaultValue: false },
+        { name: 'comunicacionesAceptadas', type: 'checkbox', defaultValue: false },
+        { name: 'version', type: 'text' },
         { name: 'fechaConsentimiento', type: 'date' },
       ],
     },

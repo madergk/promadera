@@ -1,5 +1,6 @@
 import type { Access, CollectionConfig, Where } from 'payload'
 import { isAdmin } from '../access'
+import { ESTADOS_COTIZACION } from './Cotizaciones'
 
 const isCotizacionParticipant = async (req: any, cotizacionId: unknown): Promise<boolean> => {
   const { user } = req
@@ -39,7 +40,7 @@ export const CotizacionUpdates: CollectionConfig = {
   admin: {
     useAsTitle: 'id',
     group: 'Comercial',
-    defaultColumns: ['cotizacion', 'autor', 'createdAt'],
+    defaultColumns: ['cotizacion', 'autor', 'accion', 'createdAt'],
   },
   access: {
     read: readUpdates,
@@ -50,9 +51,41 @@ export const CotizacionUpdates: CollectionConfig = {
     update: isAdmin,
     delete: isAdmin,
   },
+  hooks: {
+    beforeChange: [
+      // El autor siempre es quien hace la request; nunca se toma del body
+      // (evita firmar mensajes o eventos a nombre de otro participante).
+      ({ req, operation, data }) => {
+        if (operation === 'create' && req.user) return { ...data, autor: req.user.id }
+        return data
+      },
+    ],
+  },
   fields: [
     { name: 'cotizacion', type: 'relationship', relationTo: 'cotizaciones', required: true },
     { name: 'autor', type: 'relationship', relationTo: 'users', required: true },
-    { name: 'mensaje', type: 'textarea', required: true },
+    {
+      name: 'accion',
+      type: 'select',
+      required: true,
+      defaultValue: 'mensaje',
+      options: [
+        { label: 'Mensaje', value: 'mensaje' },
+        { label: 'Cambio de estado', value: 'estado' },
+        { label: 'Presupuesto — borrador', value: 'presupuesto_borrador' },
+        { label: 'Presupuesto — enviado', value: 'presupuesto_enviado' },
+      ],
+    },
+    { name: 'mensaje', type: 'textarea', maxLength: 4000 },
+    {
+      name: 'estadoAnterior',
+      type: 'select',
+      options: ESTADOS_COTIZACION.map((e) => ({ label: e.label, value: e.value })),
+    },
+    {
+      name: 'estadoNuevo',
+      type: 'select',
+      options: ESTADOS_COTIZACION.map((e) => ({ label: e.label, value: e.value })),
+    },
   ],
 }

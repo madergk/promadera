@@ -8,6 +8,7 @@ import sharp from 'sharp'
 
 import { Users } from './payload/collections/Users'
 import { Media } from './payload/collections/Media'
+import { Documentos } from './payload/collections/Documentos'
 import { Empresas } from './payload/collections/Empresas'
 import { Proyectos } from './payload/collections/Proyectos'
 import { Noticias } from './payload/collections/Noticias'
@@ -33,6 +34,7 @@ export default buildConfig({
   collections: [
     Users,
     Media,
+    Documentos,
     Empresas,
     Proyectos,
     Noticias,
@@ -58,9 +60,15 @@ export default buildConfig({
   plugins: [
     // En Vercel el filesystem es efímero y de solo lectura: los uploads van a Blob.
     // Sin token (desarrollo local) el plugin se desactiva y Payload usa disco.
+    // NOTA: Documentos comparte por ahora el mismo store público que Media.
+    // La privacidad hoy es solo a nivel de la API de Payload (access control
+    // por dueño/admin en Documentos.ts y Empresas.documentos) — la URL del
+    // archivo en Blob no es pública por descubrimiento normal, pero tampoco
+    // está en un store con access=private real. Ver tarea de seguimiento
+    // "Separar documentos privados de proveedores del store público".
     vercelBlobStorage({
       enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
-      collections: { media: true },
+      collections: { media: true, documentos: true },
       token: process.env.BLOB_READ_WRITE_TOKEN,
     }),
   ],
