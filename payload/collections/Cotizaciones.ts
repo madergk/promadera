@@ -1,6 +1,33 @@
 import type { Access, CollectionConfig, Where } from 'payload'
 import { isAdmin, isAuthenticated } from '../access'
 
+/** Ciclo de vida de una cotización, igual al del sitio original. */
+export const ESTADOS_COTIZACION = [
+  {
+    value: 'enviada',
+    label: 'Enviada',
+    description: 'Recibimos tu solicitud y la derivamos al proveedor.',
+  },
+  {
+    value: 'en_revision',
+    label: 'En revisión',
+    description: 'El proveedor está analizando tu consulta.',
+  },
+  {
+    value: 'respondida',
+    label: 'Respondida',
+    description: 'Recibiste una respuesta del proveedor.',
+  },
+  { value: 'cerrada', label: 'Cerrada', description: 'La cotización fue cerrada.' },
+  {
+    value: 'cancelada',
+    label: 'Cancelada',
+    description: 'Cancelaste esta solicitud antes de recibir respuesta.',
+  },
+] as const
+
+export type EstadoCotizacion = (typeof ESTADOS_COTIZACION)[number]['value']
+
 const isParticipant = async ({
   req,
   doc,
@@ -89,18 +116,29 @@ export const Cotizaciones: CollectionConfig = {
     { name: 'solicitanteTelefono', type: 'text', maxLength: 60 },
     { name: 'solicitanteEmpresa', type: 'text', maxLength: 160 },
     {
-      name: 'status',
+      name: 'estado',
       type: 'select',
       required: true,
-      defaultValue: 'pendiente',
-      options: [
-        { label: 'Pendiente', value: 'pendiente' },
-        { label: 'Respondida', value: 'respondida' },
-        { label: 'Aceptada', value: 'aceptada' },
-        { label: 'Rechazada', value: 'rechazada' },
-        { label: 'Cerrada', value: 'cerrada' },
-      ],
+      defaultValue: 'enviada',
+      options: ESTADOS_COTIZACION.map((e) => ({ label: e.label, value: e.value })),
     },
     { name: 'respuesta', type: 'textarea' },
+    { name: 'respondidaAt', type: 'date' },
+    // Presupuesto que carga el proveedor al responder.
+    { name: 'presupuestoMonto', type: 'number' },
+    {
+      name: 'presupuestoMoneda',
+      type: 'select',
+      options: [
+        { label: 'ARS', value: 'ARS' },
+        { label: 'USD', value: 'USD' },
+      ],
+    },
+    { name: 'presupuestoValidezDias', type: 'number' },
+    { name: 'presupuestoPlazo', type: 'text', maxLength: 120 },
+    { name: 'presupuestoArchivo', type: 'upload', relationTo: 'media' },
+    // Marcas del solicitante sobre la propuesta recibida.
+    { name: 'preferidaAt', type: 'date' },
+    { name: 'avanceConfirmadoAt', type: 'date' },
   ],
 }

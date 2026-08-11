@@ -150,9 +150,19 @@ export interface User {
   nombreCompleto?: string | null;
   role: 'admin' | 'proveedor' | 'cliente';
   onboarded?: boolean | null;
-  profileType?: string | null;
+  profileType?: ('empresa' | 'particular' | 'inversor' | 'productor' | 'estudiante') | null;
   telefono?: string | null;
-  ubicacion?: string | null;
+  organizacion?: string | null;
+  pais?: string | null;
+  provincia?: string | null;
+  ciudad?: string | null;
+  intereses?:
+    | {
+        interes: string;
+        id?: string | null;
+      }[]
+    | null;
+  notas?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -372,8 +382,16 @@ export interface Cotizacione {
   solicitanteEmail: string;
   solicitanteTelefono?: string | null;
   solicitanteEmpresa?: string | null;
-  status: 'pendiente' | 'respondida' | 'aceptada' | 'rechazada' | 'cerrada';
+  estado: 'enviada' | 'en_revision' | 'respondida' | 'cerrada' | 'cancelada';
   respuesta?: string | null;
+  respondidaAt?: string | null;
+  presupuestoMonto?: number | null;
+  presupuestoMoneda?: ('ARS' | 'USD') | null;
+  presupuestoValidezDias?: number | null;
+  presupuestoPlazo?: string | null;
+  presupuestoArchivo?: (number | null) | Media;
+  preferidaAt?: string | null;
+  avanceConfirmadoAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -579,7 +597,17 @@ export interface UsersSelect<T extends boolean = true> {
   onboarded?: T;
   profileType?: T;
   telefono?: T;
-  ubicacion?: T;
+  organizacion?: T;
+  pais?: T;
+  provincia?: T;
+  ciudad?: T;
+  intereses?:
+    | T
+    | {
+        interes?: T;
+        id?: T;
+      };
+  notas?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -777,8 +805,16 @@ export interface CotizacionesSelect<T extends boolean = true> {
   solicitanteEmail?: T;
   solicitanteTelefono?: T;
   solicitanteEmpresa?: T;
-  status?: T;
+  estado?: T;
   respuesta?: T;
+  respondidaAt?: T;
+  presupuestoMonto?: T;
+  presupuestoMoneda?: T;
+  presupuestoValidezDias?: T;
+  presupuestoPlazo?: T;
+  presupuestoArchivo?: T;
+  preferidaAt?: T;
+  avanceConfirmadoAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

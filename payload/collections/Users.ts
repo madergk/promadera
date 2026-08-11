@@ -1,6 +1,16 @@
 import type { CollectionConfig, Where } from 'payload'
 import { isAdmin, isAdminFieldLevel } from '../access'
 
+export const PROFILE_TYPES = [
+  { value: 'empresa', label: 'Empresa / Comprador' },
+  { value: 'particular', label: 'Particular' },
+  { value: 'inversor', label: 'Inversor' },
+  { value: 'productor', label: 'Productor forestal' },
+  { value: 'estudiante', label: 'Estudiante / Investigador' },
+] as const
+
+export type ProfileType = (typeof PROFILE_TYPES)[number]['value']
+
 export const Users: CollectionConfig = {
   slug: 'users',
   labels: { singular: 'Usuario', plural: 'Usuarios' },
@@ -49,8 +59,21 @@ export const Users: CollectionConfig = {
       ],
     },
     { name: 'onboarded', type: 'checkbox', defaultValue: false },
-    { name: 'profileType', type: 'text' },
-    { name: 'telefono', type: 'text' },
-    { name: 'ubicacion', type: 'text' },
+    {
+      name: 'profileType',
+      type: 'select',
+      options: PROFILE_TYPES.map((p) => ({ label: p.label, value: p.value })),
+    },
+    { name: 'telefono', type: 'text', maxLength: 30 },
+    { name: 'organizacion', type: 'text', maxLength: 150 },
+    { name: 'pais', type: 'text', maxLength: 80 },
+    { name: 'provincia', type: 'text', maxLength: 80 },
+    { name: 'ciudad', type: 'text', maxLength: 80 },
+    {
+      name: 'intereses',
+      type: 'array',
+      fields: [{ name: 'interes', type: 'text', required: true }],
+    },
+    { name: 'notas', type: 'textarea', maxLength: 500 },
   ],
 }
