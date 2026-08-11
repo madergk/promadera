@@ -1,9 +1,15 @@
 import * as migration_20260806_035335_initial from './20260806_035335_initial';
+import * as migration_20260811_sync_schema from './20260811_sync_schema';
 
 export const migrations = [
   {
     up: migration_20260806_035335_initial.up,
     down: migration_20260806_035335_initial.down,
     name: '20260806_035335_initial'
+  },
+  {
+    up: migration_20260811_sync_schema.up,
+    down: migration_20260811_sync_schema.down,
+    name: '20260811_sync_schema'
   },
 ];
