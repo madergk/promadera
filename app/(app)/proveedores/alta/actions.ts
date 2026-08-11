@@ -32,6 +32,7 @@ export async function subirImagen(formData: FormData): Promise<UploadResult> {
       data: { alt: file.name },
       file: await toPayloadFile(file),
       user,
+      overrideAccess: false,
     })
     const url = mediaUrl(doc)
     if (!url) return { ok: false, error: 'No pudimos subir la imagen.' }
@@ -46,7 +47,7 @@ export async function eliminarImagen(id: number): Promise<{ ok: boolean }> {
   if (!user) return { ok: false }
   try {
     const payload = await getPayloadClient()
-    await payload.delete({ collection: 'media', id, user })
+    await payload.delete({ collection: 'media', id, user, overrideAccess: false })
     return { ok: true }
   } catch {
     return { ok: false }

@@ -11,6 +11,7 @@ import {
 } from '@/components/empresas/empresa-detalle-body'
 import { getPayloadClient } from '@/lib/payload'
 import { mediaUrl } from '@/lib/payload/media'
+import { safeJsonLd } from '@/lib/json-ld'
 import type { Empresa } from '@/payload-types'
 
 export const revalidate = 300
@@ -98,7 +99,7 @@ export default async function EmpresaDetallePage({ params }: { params: Params })
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
 
       <div className="border-b border-border bg-gradient-warm pb-12 pt-12 md:pt-20">

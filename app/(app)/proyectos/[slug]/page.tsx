@@ -7,6 +7,7 @@ import { ArrowLeft, Building, Calendar, Hammer, Leaf, MapPin, Sparkles } from 'l
 import { Button } from '@/components/ui/button'
 import { getPayloadClient } from '@/lib/payload'
 import { firstMediaUrl, mediaUrl } from '@/lib/payload/media'
+import { safeJsonLd } from '@/lib/json-ld'
 import type { Proyecto } from '@/payload-types'
 
 export const revalidate = 300
@@ -73,7 +74,7 @@ export default async function ProyectoDetallePage({ params }: { params: Params }
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <article>
         <div className="relative border-b border-border bg-gradient-warm pb-12 pt-12 md:pt-20">

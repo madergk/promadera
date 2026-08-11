@@ -2,6 +2,7 @@ import * as migration_20260806_035335_initial from './20260806_035335_initial';
 import * as migration_20260811_sync_schema from './20260811_sync_schema';
 import * as migration_20260811_add_consultas_contacto from './20260811_add_consultas_contacto';
 import * as migration_20260812_extend_proyecto_drafts from './20260812_extend_proyecto_drafts';
+import * as migration_20260812_add_media_uploaded_by from './20260812_add_media_uploaded_by';
 
 export const migrations = [
   {
@@ -23,5 +24,10 @@ export const migrations = [
     up: migration_20260812_extend_proyecto_drafts.up,
     down: migration_20260812_extend_proyecto_drafts.down,
     name: '20260812_extend_proyecto_drafts'
+  },
+  {
+    up: migration_20260812_add_media_uploaded_by.up,
+    down: migration_20260812_add_media_uploaded_by.down,
+    name: '20260812_add_media_uploaded_by'
   },
 ];

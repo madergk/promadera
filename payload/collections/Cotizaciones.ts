@@ -67,7 +67,7 @@ export const Cotizaciones: CollectionConfig = {
   admin: {
     useAsTitle: 'id',
     group: 'Comercial',
-    defaultColumns: ['empresa', 'solicitante', 'tipoConsulta', 'status', 'createdAt'],
+    defaultColumns: ['empresa', 'solicitante', 'tipoConsulta', 'estado', 'createdAt'],
   },
   access: {
     read: readCotizaciones,
@@ -81,12 +81,96 @@ export const Cotizaciones: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      // El solicitante siempre es quien crea la cotización; nunca se toma del body
-      // (evita crear solicitudes a nombre de otro usuario).
-      ({ req, operation, data }) => {
-        if (operation === 'create' && req.user && req.user.role !== 'admin') {
-          return { ...data, solicitante: req.user.id }
+      // Sin esto, cualquier usuario autenticado podía mandar un POST directo a
+      // /api/cotizaciones con presupuestoArchivo/estado/presupuestoMonto/etc. ya
+      // cargados (nada los bloqueaba a nivel de campo) — eso permitía, por
+      // ejemplo, crear una cotización propia apuntando presupuestoArchivo al id
+      // adivinado de OTRO cliente y leer ese PDF privado vía Documentos.canRead.
+      // En creación: se descartan todos los campos que le corresponden solo al
+      // proveedor o que se derivan del flujo de respuesta, y el solicitante
+      // siempre sale de la sesión, nunca del body.
+      //
+      // En edición: cotizaciones.access.update (isParticipant) autoriza tanto al
+      // solicitante como al dueño de la empresa a actualizar el documento, pero
+      // sin esto cualquiera de los dos podía tocar CUALQUIER campo — el cliente
+      // podía escribirse un presupuesto o una respuesta falsos, o el proveedor
+      // podía reescribir la solicitud original. Acá se separa qué campo le
+      // corresponde a cada lado.
+      async ({ req, operation, data, originalDoc }) => {
+        const { user } = req
+        if (!user || user.role === 'admin') return data
+
+        if (operation === 'create') {
+          const {
+            respuesta,
+            respondidaAt,
+            presupuestoMonto,
+            presupuestoMoneda,
+            presupuestoValidezDias,
+            presupuestoPlazo,
+            presupuestoArchivo,
+            preferidaAt,
+            avanceConfirmadoAt,
+            ...allowed
+          } = data
+          return { ...allowed, solicitante: user.id, estado: 'enviada' }
         }
+
+        if (operation === 'update' && originalDoc) {
+          const empresaId =
+            typeof originalDoc.empresa === 'object' ? originalDoc.empresa?.id : originalDoc.empresa
+          const empresa = empresaId
+            ? await req.payload.findByID({ collection: 'empresas', id: empresaId, depth: 0 }).catch(() => null)
+            : null
+          const empresaOwnerId = typeof empresa?.user === 'object' ? empresa?.user?.id : empresa?.user
+          const isProveedor = empresaOwnerId === user.id
+          const isSolicitante =
+            (typeof originalDoc.solicitante === 'object'
+              ? originalDoc.solicitante?.id
+              : originalDoc.solicitante) === user.id
+
+          const PROVEEDOR_ONLY = [
+            'respuesta',
+            'respondidaAt',
+            'presupuestoMonto',
+            'presupuestoMoneda',
+            'presupuestoValidezDias',
+            'presupuestoPlazo',
+            'presupuestoArchivo',
+          ]
+          const SOLICITANTE_ONLY = ['preferidaAt', 'avanceConfirmadoAt']
+          // Datos de la solicitud original: nadie los edita después de creada.
+          const INMUTABLES = [
+            'empresa',
+            'solicitante',
+            'tipoConsulta',
+            'referencia',
+            'descripcion',
+            'cantidad',
+            'plazo',
+            'ubicacion',
+            'presupuesto',
+            'solicitanteNombre',
+            'solicitanteEmail',
+            'solicitanteTelefono',
+            'solicitanteEmpresa',
+          ]
+
+          // Revertir al valor original, no borrar la key: `data` en un update
+          // ya viene combinado con el resto del documento, así que borrar una
+          // key requerida (ej. descripcion) hace que la validación de Payload
+          // la vea "faltante" y rechace todo el update con 400.
+          const original = originalDoc as Record<string, unknown>
+          const next: Record<string, unknown> = { ...data }
+          const revert = (f: string) => {
+            next[f] = original[f]
+          }
+          if (!isProveedor) for (const f of PROVEEDOR_ONLY) revert(f)
+          if (!isSolicitante) for (const f of SOLICITANTE_ONLY) revert(f)
+          for (const f of INMUTABLES) revert(f)
+          return next
+        }
+
         return data
       },
     ],
