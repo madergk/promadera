@@ -438,7 +438,22 @@ export interface CotizacionUpdate {
 export interface ProyectoDraft {
   id: number;
   user: number | User;
+  refSlug?: string | null;
+  titulo?: string | null;
   wizardStep?: number | null;
+  tipo?: ('vivienda' | 'exterior') | null;
+  subtipo?: string | null;
+  superficie?: string | null;
+  ubicacion?: string | null;
+  plazo?: string | null;
+  presupuesto?: string | null;
+  terminaciones?:
+    | {
+        valor: string;
+        id?: string | null;
+      }[]
+    | null;
+  notas?: string | null;
   brief?:
     | {
         [k: string]: unknown;
@@ -900,7 +915,22 @@ export interface CotizacionUpdatesSelect<T extends boolean = true> {
  */
 export interface ProyectoDraftsSelect<T extends boolean = true> {
   user?: T;
+  refSlug?: T;
+  titulo?: T;
   wizardStep?: T;
+  tipo?: T;
+  subtipo?: T;
+  superficie?: T;
+  ubicacion?: T;
+  plazo?: T;
+  presupuesto?: T;
+  terminaciones?:
+    | T
+    | {
+        valor?: T;
+        id?: T;
+      };
+  notas?: T;
   brief?: T;
   updatedAt?: T;
   createdAt?: T;
