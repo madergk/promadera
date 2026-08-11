@@ -4,6 +4,7 @@ import { Manrope } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { CookieBanner } from '@/components/legal/cookie-banner'
 import { Toaster } from '@/components/ui/sonner'
 import { TAGLINE } from '@/lib/brand'
 import { isIndexable } from '@/lib/site'
@@ -57,6 +58,7 @@ export default function AppLayout({
           <main className="flex-1 pt-20">{children}</main>
           <Footer />
         </div>
+        <CookieBanner />
         <Toaster />
         <Analytics />
       </body>

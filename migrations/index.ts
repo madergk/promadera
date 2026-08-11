@@ -1,5 +1,6 @@
 import * as migration_20260806_035335_initial from './20260806_035335_initial';
 import * as migration_20260811_sync_schema from './20260811_sync_schema';
+import * as migration_20260811_add_consultas_contacto from './20260811_add_consultas_contacto';
 
 export const migrations = [
   {
@@ -11,5 +12,10 @@ export const migrations = [
     up: migration_20260811_sync_schema.up,
     down: migration_20260811_sync_schema.down,
     name: '20260811_sync_schema'
+  },
+  {
+    up: migration_20260811_add_consultas_contacto.up,
+    down: migration_20260811_add_consultas_contacto.down,
+    name: '20260811_add_consultas_contacto'
   },
 ];

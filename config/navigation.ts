@@ -93,6 +93,19 @@ export const navGroups: NavGroup[] = [
   },
 ]
 
+/** Grupo adicional para /mapa-del-sitio únicamente — no forma parte del mega-menú del header. */
+export const legalGroup: NavGroup = {
+  theme: 'Legal',
+  description: 'Documentos legales y mapa del sitio.',
+  items: [
+    { href: '/privacidad', label: 'Privacidad', description: 'Qué datos recolectamos y por qué.' },
+    { href: '/terminos', label: 'Términos', description: 'Condiciones de uso del sitio.' },
+    { href: '/cookies', label: 'Cookies', description: 'Qué cookies usamos y cómo cambiarlas.' },
+    { href: '/confianza', label: 'Confianza', description: 'Seguridad y privacidad en detalle.' },
+    { href: '/mapa-del-sitio', label: 'Mapa del sitio', description: 'Todas las secciones, agrupadas.' },
+  ],
+}
+
 /** Rutas privadas: sólo visibles en el menú de cuenta, con sesión iniciada. */
 export const accountNav: NavItem[] = [
   { href: '/perfil', label: 'Mi perfil' },

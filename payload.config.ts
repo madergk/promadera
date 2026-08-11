@@ -19,6 +19,7 @@ import { Cotizaciones } from './payload/collections/Cotizaciones'
 import { CotizacionUpdates } from './payload/collections/CotizacionUpdates'
 import { ProyectoDrafts } from './payload/collections/ProyectoDrafts'
 import { ConsultasProveedores } from './payload/collections/ConsultasProveedores'
+import { ConsultasContacto } from './payload/collections/ConsultasContacto'
 import { SiteTheme } from './payload/globals/SiteTheme'
 
 const filename = fileURLToPath(import.meta.url)
@@ -45,6 +46,7 @@ export default buildConfig({
     CotizacionUpdates,
     ProyectoDrafts,
     ConsultasProveedores,
+    ConsultasContacto,
   ],
   globals: [SiteTheme],
   editor: lexicalEditor(),

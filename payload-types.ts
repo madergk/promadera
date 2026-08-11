@@ -80,6 +80,7 @@ export interface Config {
     'cotizacion-updates': CotizacionUpdate;
     'proyecto-drafts': ProyectoDraft;
     'consultas-proveedores': ConsultasProveedore;
+    'consultas-contacto': ConsultasContacto;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -100,6 +101,7 @@ export interface Config {
     'cotizacion-updates': CotizacionUpdatesSelect<false> | CotizacionUpdatesSelect<true>;
     'proyecto-drafts': ProyectoDraftsSelect<false> | ProyectoDraftsSelect<true>;
     'consultas-proveedores': ConsultasProveedoresSelect<false> | ConsultasProveedoresSelect<true>;
+    'consultas-contacto': ConsultasContactoSelect<false> | ConsultasContactoSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -497,6 +499,20 @@ export interface ConsultasProveedore {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consultas-contacto".
+ */
+export interface ConsultasContacto {
+  id: number;
+  nombre: string;
+  email: string;
+  organizacion?: string | null;
+  asunto: string;
+  mensaje: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -570,6 +586,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'consultas-proveedores';
         value: number | ConsultasProveedore;
+      } | null)
+    | ({
+        relationTo: 'consultas-contacto';
+        value: number | ConsultasContacto;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -895,6 +915,19 @@ export interface ConsultasProveedoresSelect<T extends boolean = true> {
   rubro?: T;
   provincia?: T;
   sitioWeb?: T;
+  mensaje?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consultas-contacto_select".
+ */
+export interface ConsultasContactoSelect<T extends boolean = true> {
+  nombre?: T;
+  email?: T;
+  organizacion?: T;
+  asunto?: T;
   mensaje?: T;
   updatedAt?: T;
   createdAt?: T;
